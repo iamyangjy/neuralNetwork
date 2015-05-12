@@ -1,0 +1,79 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<project default="dist" name="customerPredictBuilding ant jar" basedir=".">
+    <!--this file was created by Eclipse Runnable JAR Export Wizard-->
+
+	<property name="src" value="src"/>
+	<property name="build" value="build"/>
+	<property name="dist" value="dist/predict"/>
+	<property name="lib" value="lib"/>
+	<property name="conf" value="conf"/>
+
+	<target name="init">
+		<delete dir="${build}"/>
+		<delete dir="${dist}" />
+		<mkdir dir="${build}"/>
+		<mkdir dir="${dist}"/>
+	</target>
+
+	<target name="compile" depends="init">
+	<!-- Compile the java code from ${src} into ${build} -->
+		<javac srcdir="${src}" destdir="${build}" encoding="UTF-8">
+		<classpath>
+		<fileset dir="lib">
+		<include name="*.jar"/> </fileset>
+		</classpath>
+		</javac>
+	</target>
+
+	<pathconvert property="lib.classpath" pathsep=" " description="把上面定义的path转换成property，path中jar包的路径用空格分开">
+		<mapper>
+			<chainedmapper>
+				<!-- 移除绝对路径 -->
+				<flattenmapper />
+				<!-- 加上lib前缀 -->
+				<globmapper from="*" to="lib/*" />
+			</chainedmapper>
+		</mapper>
+		<path>
+			<!-- lib.home contains all jar files, in several subdirectories -->
+       		<fileset dir="${lib}">
+				<include name="**/*.jar"/>
+			</fileset>
+		</path>
+	</pathconvert>
+
+    <target name="dist" depends="compile">
+        <jar destfile="${dist}/predict.jar">
+            <manifest>
+                <attribute name="Main-Class" value="com.ruijie.main.RunMod"/>
+                <attribute name="Class-Path" value=". conf/
+					${lib.classpath}"/>
+            </manifest>
+            <fileset dir="${build}"/>
+        </jar>
+<!--		<copy todir="${dist}" file="run.bat"/>
+		<copy todir="${dist}" file="run.sh"/>
+		<copy todir="${dist}" file="readme.txt"/>-->
+		<mkdir dir="${dist}\lib"/>
+		<copy todir="${dist}\lib">
+           <fileset dir="${lib}">
+             <include name="*.jar" />
+           </fileset>
+       </copy>
+		<mkdir dir="${dist}\conf"/>
+	   	<copy todir="${dist}\conf">
+           <fileset dir="${conf}">
+               <include name="holiday.cfg" />
+			   <include name="rbis_predict.cfg" />
+			   <include name="weather.cfg" />
+			   <include name="applicationContext.xml"/>
+			   <include name="log4j2.xml"/>
+			   <include name="holiday.properties"/>
+			   <include name="predict.properties"/>
+			   <include name="weather.properties"/>
+           </fileset>
+       </copy>
+		<mkdir dir="${dist}\logs"/>
+    </target>
+
+</project>
